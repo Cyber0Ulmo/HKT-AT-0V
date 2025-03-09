@@ -116,7 +116,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
             revert FlightTicket_SeatsMustBeGreaterThanZero(_totalSeats);
 
         /// @dev Increments the flight ID counter for the next flight.
-        ++s_flightId;
+        s_flightId = s_flightId + 1;
 
         /// @dev Generates a new flight ID and sets a default ticket price.
         uint256 flightId = s_flightId;
@@ -196,7 +196,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
      */
     function getSeatStatus(uint256 _flightId) external view returns (uint256 availableSeats_) {
         /// @dev Checks if the flight ID is valid. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
 
         /// @dev Returns the number of available seats by subtracting the number of booked seats from total seats.
         return s_flights[_flightId].totalSeats - s_flights[_flightId].seatsBooked;
@@ -213,7 +213,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
     function bookSeat(uint256 _flightId) external payable {
         /// @notice CHECKS
         /// @dev Validates that the flight ID exists. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
 
         /**
          * @dev Ensures that the booking is made at least one hour before the flight's departure.
@@ -266,7 +266,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
     function bookSeatUsingPassengerBalance(uint256 _flightId) external {
         /// @notice CHECKS
         /// @dev Validates that the flight ID exists. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
 
         /**
          * @dev Ensures that the booking is made at least one hour before the flight's departure.
@@ -340,7 +340,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
     function cancelTicket(uint256 _flightId) external {
         /// @notice CHECKS
         /// @dev Validates that the flight ID exists. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
         /// @dev Verifies that the caller holds a ticket for the specified flight. Reverts if no ticket is found.
         if (balanceOf(msg.sender, _flightId) == 0) revert FlightTicket_NoTicketFound(msg.sender, _flightId);
 
@@ -415,7 +415,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
      */
     function getFlightBalance(uint256 _flightId) external view onlyOwner returns (uint256 balance_) {
         /// @dev Verifies that the specified flight exists. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
         return s_flights[_flightId].balance;
     }
 
@@ -428,7 +428,7 @@ contract FlightTicket is ERC1155URIStorage, Ownable {
     function withdrawFlightFunds(uint256 _flightId) external onlyOwner {
         /// @notice CHECKS
         /// @dev Validates that the specified flight exists. Reverts if the flight does not exist.
-        if (_flightId >= s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
+        if (_flightId > s_flightId) revert FlightTicket_FlightDoesNotExist(_flightId);
         
         Flight storage flight = s_flights[_flightId];
         
